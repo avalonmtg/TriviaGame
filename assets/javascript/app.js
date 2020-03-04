@@ -1,25 +1,25 @@
 $(document).ready(function () {
-
+    var card = $("#quiz");
+    var results = $("#results");
     var timer;
-
+    //start game with onclick
     $("#start").on("click", function () {
         game.startGame()
         console.log("test")
     })
-
+    //var to hold the game
     var game = {
         incorrect: 0,
         correct: 0,
-        timer: 90,
-
+        timer: 60,
+        //timer and start game with questions and answer
         countdown: function () {
             game.timer--;
             $("#count").html(game.timer);
             console.log("inside of countdown")
             if (game.timer === 0) {
-                game.done()
-
-
+                game.done();
+                console.log("done")
             }
         },
         startGame: function () {
@@ -27,38 +27,44 @@ $(document).ready(function () {
             timer = setInterval(game.countdown, 1000)
             console.log(timer)
             console.log(triviaQuestions.length)
-            $("#wrapper2").prepend("<h3>Time Remaining: <span id='count'> 90</span> seconds</h3>")
+            $("#wrapper2").prepend("<h3>Time Remaining: <span id='count'> 60</span> seconds</h3>")
             $("#start").remove();
             for (var i = 0; i < triviaQuestions.length; i++) {
-                $('#wrapper2').append('<h2>' + triviaQuestions[i].question + '</h2');
-                for (var m = 0; m < triviaQuestions[i].answers.length; m++) {
-                    $("#wrapper2").append("<input type='radio' name='question-" + i + "' value='" + triviaQuestions[i].answers[m] + "'>" + triviaQuestions[i].answers[m]);
+                card.append('<h2>' + triviaQuestions[i].question + '</h2');
+                for (var m = 0; m < triviaQuestions[i].choices.length; m++) {
+                    card.append("<input type='radio' name='question-" + i + "' value='" + triviaQuestions[i].choices[m] + "'>" + triviaQuestions[i].choices[m]);
                 }
             }
         },
+
+        //done to stop the timer and put in the score
         done: function () {
             console.log("donefunction")
-            for (var i = 0; i < 5; i++) {
-                $.each($("input[name='question-" + i + "']:checked"), function () {
-                    console.log($(this).val())
-                    console.log(questions[i].correctAnswer)
-                    if ($(this).val() == questions[i].correctAnswer) {
-                        game.correct++;
-                    } else {
-                        game.incorrect++;
-                    }
-                });
+            var input = card.children("input:checked")
+            for (var i = 0; i < input.length; i++) {
 
-            }
-        },
+                if ($(input[i]).val() === triviaQuestions[i].answer) {
+                    game.correct++;
+                } else {
+                    game.incorrect++;
+                }
+            };
 
+            clearInterval(timer)
+            $("#wrapper2").remove();
+
+            results.html(`<h1>You are Done!</h1>`)
+            results.append(`<h2>Correct Answers: ${game.correct}</h2>`)
+            results.append(`<h2>Incorrect Answers: ${game.incorrect}</h2>`)
+
+        }
     }
 
-
+    //questions and answers
     var triviaQuestions = [
         {
             question: "The most expensive coffee in the world comes from which of the following?",
-            choices: ["A sacred tree in Peru", "beans processed with gold flakes", "Cat Poop", "Monks that grow and process the beans by hand"],
+            choices: ["A sacred tree in Peru", "Beans processed with gold flakes", "Cat Poop", "Monks that grow and process the beans by hand"],
             answer: "Cat Poop"
         },
 
@@ -92,4 +98,4 @@ $(document).ready(function () {
             answer: "1"
         }
     ]
-})
+})   
